@@ -10,7 +10,7 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
-
+    [SerializeField] private int m_lives;
     [SerializeField]
     private Vector3 startPos;
 
@@ -18,7 +18,8 @@ public class GameManager : MonoBehaviour
     private Vector2 minMaxRange, spawnRange;
 
     [SerializeField]
-    private GameObject pillarPrefab, playerPrefab, stickPrefab, diamondPrefab, currentCamera;
+    private GameObject pillarPrefab, stickPrefab, diamondPrefab, currentCamera;
+    [SerializeField] private GameObject[] playerPrefab;
 
     [SerializeField]
     private Transform rotateTransform, endRotateTransform;
@@ -42,6 +43,12 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
 
+    private int m_PlayerIndex;
+    private Vector3 m_CurrentPlatform;
+    [SerializeField] private float yOffset;
+    [SerializeField] private Canvas m_GameplayCanvas;
+    private Rigidbody2D m_PlayerRb;
+
     private void Awake()
     {
         if(instance == null)
@@ -52,17 +59,17 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
+        m_PlayerIndex = PrefManager.PlayerIndex;
+        
         currentState = GameState.START;
 
         endPanel.SetActive(false);
         scorePanel.SetActive(false);
         startPanel.SetActive(true);
-
         score = 0;
         diamonds = PlayerPrefs.HasKey("Diamonds") ? PlayerPrefs.GetInt("Diamonds") : 0;
         highScore = PlayerPrefs.HasKey("HighScore") ? PlayerPrefs.GetInt("HighScore") : 0;
-
+        
         scoreText.text = score.ToString();
         diamondsText.text = diamonds.ToString();
         highScoreText.text = highScore.ToString();
@@ -70,9 +77,9 @@ public class GameManager : MonoBehaviour
         CreateStartObjects();
         cameraOffsetX = currentCamera.transform.position.x - player.transform.position.x;
 
+        GameStart();
         if(StateManager.instance.hasSceneStarted)
         {
-            GameStart();
         }
     }
 
@@ -135,7 +142,30 @@ public class GameManager : MonoBehaviour
             player.GetComponent<Rigidbody2D>().gravityScale = 1f;
             x = Rotate(currentStick.transform, endRotateTransform, 0.5f);
             yield return x;
-            GameOver();
+            if (m_lives > 1)
+            {
+                m_lives--;
+                player.GetComponent<Rigidbody2D>().gravityScale = 0;
+                player.transform.position = m_CurrentPlatform;
+                m_PlayerRb.constraints = RigidbodyConstraints2D.FreezePositionY;
+                m_PlayerRb.constraints = RigidbodyConstraints2D.None;
+                
+                GameStart();
+                movePosition = currentCamera.transform.position;
+                movePosition.x = player.transform.position.x + cameraOffsetX;
+                x = Move(currentCamera.transform, movePosition, 0.5f);
+                yield return x;
+                Vector3 stickPosition = currentPillar.transform.position;
+                stickPosition.x += currentPillar.transform.localScale.x * 0.5f - 0.05f;
+                stickPosition.y = currentStick.transform.position.y;
+                stickPosition.z = currentStick.transform.position.z;
+                currentStick = Instantiate(stickPrefab, stickPosition, Quaternion.identity);
+            }
+            else
+            {
+                GameOver();
+            }
+            
         }
         else
         {
@@ -167,10 +197,11 @@ public class GameManager : MonoBehaviour
     {
         CreatePlatform();
 
-        Vector3 playerPos = playerPrefab.transform.position;
+        Vector3 playerPos = playerPrefab[m_PlayerIndex].transform.position;
         playerPos.x += (currentPillar.transform.localScale.x * 0.5f - 0.35f);
-        player = Instantiate(playerPrefab,playerPos,Quaternion.identity);
+        player = Instantiate(playerPrefab[m_PlayerIndex],playerPos,Quaternion.identity);
         player.name = "Player";
+        m_PlayerRb = player.GetComponent<Rigidbody2D>();
 
         Vector3 stickPos = stickPrefab.transform.position;
         stickPos.x += (currentPillar.transform.localScale.x*0.5f - 0.05f);
@@ -185,7 +216,7 @@ public class GameManager : MonoBehaviour
         currentPlatform.transform.position = pillarPrefab.transform.position + startPos;
         Vector3 tempDistance = new Vector3(Random.Range(spawnRange.x,spawnRange.y) + currentPillar.transform.localScale.x*0.5f,0,0);
         startPos += tempDistance;
-
+        m_CurrentPlatform = currentPlatform.transform.position+ new Vector3(transform.position.x, transform.position.y+ yOffset, 0);
         if(Random.Range(0,10) == 0)
         {
             var tempDiamond = Instantiate(diamondPrefab);
@@ -212,6 +243,7 @@ public class GameManager : MonoBehaviour
 
     void GameOver()
     {
+        m_GameplayCanvas.sortingOrder = 10;
         endPanel.SetActive(true);
         scorePanel.SetActive(false);
 
@@ -234,6 +266,7 @@ public class GameManager : MonoBehaviour
 
     public void GameStart()
     {
+        m_GameplayCanvas.sortingOrder = 0;
         startPanel.SetActive(false);
         scorePanel.SetActive(true);
 
@@ -252,7 +285,7 @@ public class GameManager : MonoBehaviour
     public void SceneRestart()
     {
         StateManager.instance.hasSceneStarted = true;
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
     }
 
     //Helper Functions
