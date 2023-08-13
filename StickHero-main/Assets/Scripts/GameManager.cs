@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public enum GameState
 {
@@ -85,26 +86,30 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if(currentState == GameState.INPUT)
+        if (!IsTouchOnUI())
         {
-            if(Input.GetMouseButton(0))
+            if (currentState == GameState.INPUT)
             {
-                currentState = GameState.GROWING;
-                ScaleStick();
+                if (Input.GetMouseButton(0))
+                {
+                    currentState = GameState.GROWING;
+                    ScaleStick();
+                }
             }
-        }
 
-        if(currentState == GameState.GROWING)
-        {
-            if(Input.GetMouseButton(0))
+            if (currentState == GameState.GROWING)
             {
-                ScaleStick();
-            }
-            else
-            {
-                StartCoroutine(FallStick());
+                if (Input.GetMouseButton(0))
+                {
+                    ScaleStick();
+                }
+                else
+                {
+                    StartCoroutine(FallStick());
+                }
             }
         }
+        
     }
 
     void ScaleStick()
@@ -315,5 +320,16 @@ public class GameManager : MonoBehaviour
             currentTransform.rotation = current;
             yield return null;
         }
+    }
+
+    private bool IsTouchOnUI()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return true;
+        }
+        
+        return false;
     }
 }
