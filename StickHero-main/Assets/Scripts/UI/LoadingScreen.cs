@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,8 @@ public class LoadingScreen : MonoBehaviour
     [SerializeField] private Image m_LoadingForground;
     [SerializeField] private float m_FackLoadingTime;
     [SerializeField] private GameObject m_CharacterSelection;
+    public Action OnLoadingComplete;
+
     private void OnEnable()
     {
         m_LoadingForground.fillAmount = 0;

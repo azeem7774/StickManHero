@@ -13,6 +13,7 @@ public class CharacterSelection : MonoBehaviour
     [SerializeField] private Button m_Next, m_Previous, m_Select, m_Buy;
     [SerializeField] private GameObject m_LoadingScreen;
     [SerializeField] private TextMeshProUGUI m_Oranges, m_PlayerPrice, m_NotEnoughCash;
+    [SerializeField] private LoadingScreen m_Loading;
     private string PlayerUnlock = "PlayerUnlock";
 
     private int m_PlayerIndex;
@@ -29,8 +30,12 @@ public class CharacterSelection : MonoBehaviour
         m_Previous.onClick.AddListener(OnClickPrevious);
         m_Select.onClick.AddListener(OnClickSelect);
         m_Buy.onClick.AddListener(OnClickBuy);
-        
         TurnOnPlayer(m_PlayerIndex);
+        if (!IsPlayerLocked(m_PlayerIndex))
+        {
+            m_Buy.gameObject.SetActive(false);
+            m_Select.gameObject.SetActive(true);
+        }
     }
 
     private void OnClickBuy()
@@ -62,7 +67,7 @@ public class CharacterSelection : MonoBehaviour
     {
         m_PlayerIndex = (m_PlayerIndex + m_Characters.Length - 1) % m_Characters.Length;
         TurnOnPlayer(m_PlayerIndex);
-        if (CheckPlayerLock(m_PlayerIndex))
+        if (IsPlayerLocked(m_PlayerIndex))
         {
             m_Buy.gameObject.SetActive(true);
             m_Select.gameObject.SetActive(false);
@@ -80,7 +85,7 @@ public class CharacterSelection : MonoBehaviour
     {
         m_PlayerIndex = (m_PlayerIndex + 1) % m_Characters.Length;
         TurnOnPlayer(m_PlayerIndex);
-        if (CheckPlayerLock(m_PlayerIndex))
+        if (IsPlayerLocked(m_PlayerIndex))
         {
             m_Buy.gameObject.SetActive(true);
             m_Select.gameObject.SetActive(false);
@@ -113,7 +118,7 @@ public class CharacterSelection : MonoBehaviour
             }
         }
     }
-    private bool CheckPlayerLock(int index)
+    private bool IsPlayerLocked(int index)
     {
         if (m_Players[index].m_IsLocked)
         {
