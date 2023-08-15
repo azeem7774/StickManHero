@@ -10,6 +10,7 @@ public class Apples : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             GameManager.instance.UpdateApple();
+            SoundManager.Instance.PlayPickupSound();
             Instantiate(m_Partcle, transform.position, Quaternion.identity);
             StartCoroutine(Destroy());
             gameObject.SetActive(false);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public enum GameState
 {
@@ -361,6 +362,13 @@ public class GameManager : MonoBehaviour
     private List<GameObject> m_Platforms = new List<GameObject>(); 
     #region Visuals
     [SerializeField] private Sprite[] m_GameplayBGs;
+    [SerializeField] private Image m_Background;
+    private void RandomBackground()
+    {
+        int random = Random.Range(0, m_GameplayBGs.Length);
+        
+
+    }
     #endregion
     #endregion
 }
