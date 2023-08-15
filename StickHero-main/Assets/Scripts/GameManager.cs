@@ -19,21 +19,21 @@ public class GameManager : MonoBehaviour
     private Vector2 minMaxRange, spawnRange;
 
     [SerializeField]
-    private GameObject pillarPrefab, stickPrefab, diamondPrefab, currentCamera;
+    private GameObject pillarPrefab, stickPrefab, orangePrefab, applePrefab , currentCamera;
     [SerializeField] private GameObject[] playerPrefab;
 
     [SerializeField]
     private Transform rotateTransform, endRotateTransform;
 
     [SerializeField]
-    private GameObject scorePanel, startPanel, endPanel;
+    private GameObject scorePanel, startPanel, endPanel, m_GamePlayScreen;
 
     [SerializeField]
-    private TMP_Text scoreText, scoreEndText, diamondsText, highScoreText;
+    private TMP_Text scoreText, scoreEndText, orangeText, appleText, highScoreText;
 
     private GameObject currentPillar, nextPillar, currentStick, player;
 
-    private int score, diamonds, highScore;
+    private int score, oranges, apples, highScore;
 
     private float cameraOffsetX;
 
@@ -68,11 +68,13 @@ public class GameManager : MonoBehaviour
         scorePanel.SetActive(false);
         startPanel.SetActive(true);
         score = 0;
-        diamonds = PlayerPrefs.HasKey("Diamonds") ? PlayerPrefs.GetInt("Diamonds") : 0;
+        oranges = PlayerPrefs.HasKey("Diamonds") ? PlayerPrefs.GetInt("Diamonds") : 0;
         highScore = PlayerPrefs.HasKey("HighScore") ? PlayerPrefs.GetInt("HighScore") : 0;
-        
+        apples = m_lives;
+
         scoreText.text = score.ToString();
-        diamondsText.text = diamonds.ToString();
+        orangeText.text = oranges.ToString();
+        appleText.text = apples.ToString();
         highScoreText.text = highScore.ToString();
 
         CreateStartObjects();
@@ -86,7 +88,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (!IsTouchOnUI())
+        //if (!IsTouchOnUI())
         {
             if (currentState == GameState.INPUT)
             {
@@ -109,7 +111,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        
+
     }
 
     void ScaleStick()
@@ -150,6 +152,7 @@ public class GameManager : MonoBehaviour
             if (m_lives > 1)
             {
                 m_lives--;
+                appleText.text = m_lives.ToString();
                 player.GetComponent<Rigidbody2D>().gravityScale = 0;
                 player.transform.position = m_CurrentPlatform;
                 m_PlayerRb.constraints = RigidbodyConstraints2D.FreezePositionY;
@@ -222,13 +225,20 @@ public class GameManager : MonoBehaviour
         Vector3 tempDistance = new Vector3(Random.Range(spawnRange.x,spawnRange.y) + currentPillar.transform.localScale.x*0.5f,0,0);
         startPos += tempDistance;
         m_CurrentPlatform = currentPlatform.transform.position+ new Vector3(transform.position.x, transform.position.y+ yOffset, 0);
-        if(Random.Range(0,10) == 0)
+        if(Random.Range(0,1) == 0)
         {
-            var tempDiamond = Instantiate(diamondPrefab);
+            int randomPrefabe = Random.Range(0, 2);
+            GameObject pickable;
+            if (randomPrefabe == 0)
+                pickable = Instantiate(applePrefab);
+            
+            else
+                pickable = Instantiate(orangePrefab);
             Vector3 tempPos = currentPlatform.transform.position;
-            tempPos.y = diamondPrefab.transform.position.y;
-            tempDiamond.transform.position = tempPos;
+            tempPos.y = orangePrefab.transform.position.y;
+            pickable.transform.position = tempPos;
         }
+        m_Platforms.Add(currentPlatform);
     }
 
     void SetRandomSize(GameObject pillar)
@@ -248,8 +258,13 @@ public class GameManager : MonoBehaviour
 
     void GameOver()
     {
+        foreach (var item in m_Platforms)
+            item.SetActive(false);
+
+        
         m_GameplayCanvas.sortingOrder = 10;
         endPanel.SetActive(true);
+        m_GamePlayScreen.SetActive(false);
         scorePanel.SetActive(false);
 
         if(score > highScore)
@@ -262,13 +277,17 @@ public class GameManager : MonoBehaviour
         highScoreText.text = highScore.ToString();
     }
 
-    public void UpdateDiamonds()
+    public void UpdateOranges()
     {
-        diamonds++;
-        PlayerPrefs.SetInt("Diamonds", diamonds);
-        diamondsText.text = diamonds.ToString();
+        oranges++;
+        PlayerPrefs.SetInt("Diamonds", oranges);
+        orangeText.text = oranges.ToString();
     }
-
+    public void UpdateApple()
+    {
+        m_lives++;
+        appleText.text = m_lives.ToString();
+    }
     public void GameStart()
     {
         m_GameplayCanvas.sortingOrder = 0;
@@ -326,10 +345,22 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (EventSystem.current.IsPointerOverGameObject())
+            Touch touch = Input.GetTouch(0);
+
+            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+            {
+                Debug.Log("Touch on UI ture");
                 return true;
+            }
         }
-        
+
+        Debug.Log("Touch on UI false");
         return false;
     }
+    #region MyCodeSupprt
+    private List<GameObject> m_Platforms = new List<GameObject>(); 
+    #region Visuals
+    [SerializeField] private Sprite[] m_GameplayBGs;
+    #endregion
+    #endregion
 }
