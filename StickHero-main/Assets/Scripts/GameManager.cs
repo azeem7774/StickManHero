@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        RandomBackground();
         m_PlayerIndex = PrefManager.PlayerIndex;
         
         currentState = GameState.START;
@@ -366,7 +367,7 @@ public class GameManager : MonoBehaviour
     private void RandomBackground()
     {
         int random = Random.Range(0, m_GameplayBGs.Length);
-        
+        m_Background.sprite = m_GameplayBGs[random];
 
     }
     #endregion

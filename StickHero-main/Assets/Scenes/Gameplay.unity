@@ -3756,7 +3756,16 @@ MonoBehaviour:
   maxStickSize: 5
   yOffset: 1
   m_GameplayCanvas: {fileID: 114598834}
-  m_GameplayBGs: []
+  m_GameplayBGs:
+  - {fileID: 21300000, guid: 731ffc2a5c3f24f47ba6070fbd4d37e6, type: 3}
+  - {fileID: 21300000, guid: 30f7e9bab2fb846859e43ddbe8267346, type: 3}
+  - {fileID: 21300000, guid: 54d0f6c1a7a334ae695ebc9d3a8ef51c, type: 3}
+  - {fileID: 21300000, guid: ecad178a1c37547238571d808a887e57, type: 3}
+  - {fileID: 21300000, guid: fd25712826ea44c37a2ff8618a6566ac, type: 3}
+  - {fileID: 21300000, guid: 862e094d2ad2047ed8eada163c61ef0d, type: 3}
+  - {fileID: 21300000, guid: 42ee79472af8240c384e87667f39d7be, type: 3}
+  - {fileID: 21300000, guid: a02e8ffaff63f409d9b18a442f12bab2, type: 3}
+  m_Background: {fileID: 779572491}
 --- !u!4 &2028912737
 Transform:
   m_ObjectHideFlags: 0
