@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System;
 
 public enum GameState
 {
@@ -20,19 +21,20 @@ public class GameManager : MonoBehaviour
     private Vector2 minMaxRange, spawnRange;
 
     [SerializeField]
-    private GameObject pillarPrefab, stickPrefab, orangePrefab, applePrefab , currentCamera;
+    private GameObject pillarPrefab, centerPointPrefab, stickPrefab, orangePrefab, applePrefab , currentCamera;
     [SerializeField] private GameObject[] playerPrefab;
 
     [SerializeField]
     private Transform rotateTransform, endRotateTransform;
 
     [SerializeField]
-    private GameObject scorePanel, startPanel, endPanel, m_GamePlayScreen;
+    private GameObject scorePanel, startPanel, endPanel, m_GamePlayScreen, m_StickTip;
 
     [SerializeField]
     private TMP_Text scoreText, scoreEndText, orangeText, appleText, highScoreText;
 
     private GameObject currentPillar, nextPillar, currentStick, player;
+    public GameObject Player => player;
 
     private int score, oranges, apples, highScore;
 
@@ -128,9 +130,18 @@ public class GameManager : MonoBehaviour
     IEnumerator FallStick()
     {
         currentState = GameState.NONE;
-        var x = Rotate(currentStick.transform, rotateTransform, 0.4f);
+        var x = Rotate(currentStick.transform, rotateTransform, 0.4f); 
         yield return x;
-
+        m_StickTip = currentStick.transform.GetChild(0).gameObject;
+        Vector2 pillarCenter = nextPillar.GetComponent<Collider2D>().bounds.center;
+        float distanceToCeneter = Mathf.Abs(pillarCenter.x);
+        if (m_StickTip.transform.position.x-0.2f <= distanceToCeneter && m_StickTip.transform.position.x + 0.2f >= distanceToCeneter)
+        {
+            if (true)
+            {
+                print("Perfect");
+            }
+        }
         Vector3 movePosition = currentStick.transform.position + new Vector3(currentStick.transform.localScale.y,0,0);
         movePosition.y = player.transform.position.y;
         x = Move(player.transform,movePosition,0.5f);
@@ -189,6 +200,8 @@ public class GameManager : MonoBehaviour
             movePosition = currentCamera.transform.position;
             movePosition.x = player.transform.position.x + cameraOffsetX;
             x = Move(currentCamera.transform, movePosition, 0.5f);
+            Vector2 BGPos =  m_Forground.rectTransform.position;
+            Move(m_Forground.transform, BGPos, 0.5f);
             yield return x;
 
             CreatePlatform();
@@ -220,16 +233,17 @@ public class GameManager : MonoBehaviour
 
     void CreatePlatform()
     {
-        var currentPlatform = Instantiate(pillarPrefab);
+        GameObject currentPlatform = Instantiate(pillarPrefab);
+        centerPointPrefab = currentPlatform.transform.GetChild(0).gameObject;// get red sprite as a perfect point
         currentPillar = nextPillar == null ? currentPlatform : nextPillar;
         nextPillar = currentPlatform;
         currentPlatform.transform.position = pillarPrefab.transform.position + startPos;
-        Vector3 tempDistance = new Vector3(Random.Range(spawnRange.x,spawnRange.y) + currentPillar.transform.localScale.x*0.5f,0,0);
+        Vector3 tempDistance = new Vector3(UnityEngine.Random.Range(spawnRange.x,spawnRange.y) + currentPillar.transform.localScale.x*0.5f,0,0);
         startPos += tempDistance;
         m_CurrentPlatform = currentPlatform.transform.position+ new Vector3(transform.position.x, transform.position.y+ yOffset, 0);
-        if(Random.Range(0,1) == 0)
+        if(UnityEngine.Random.Range(0,1) == 0)
         {
-            int randomPrefabe = Random.Range(0, 2);
+            int randomPrefabe = UnityEngine.Random.Range(0, 2);
             GameObject pickable;
             if (randomPrefabe == 0)
                 pickable = Instantiate(applePrefab);
@@ -248,7 +262,7 @@ public class GameManager : MonoBehaviour
         var newScale = pillar.transform.localScale;
         var allowedScale = nextPillar.transform.position.x - currentPillar.transform.position.x
             - currentPillar.transform.localScale.x * 0.5f - 0.4f;
-        newScale.x = Mathf.Max(minMaxRange.x,Random.Range(minMaxRange.x,Mathf.Min(allowedScale,minMaxRange.y)));
+        newScale.x = Mathf.Max(minMaxRange.x, UnityEngine.Random.Range(minMaxRange.x,Mathf.Min(allowedScale,minMaxRange.y)));
         pillar.transform.localScale = newScale;
     }
 
@@ -362,14 +376,39 @@ public class GameManager : MonoBehaviour
     #region MyCodeSupprt
     private List<GameObject> m_Platforms = new List<GameObject>(); 
     #region Visuals
-    [SerializeField] private Sprite[] m_GameplayBGs;
+    [SerializeField] private Background[] m_GameplayBGs;
     [SerializeField] private Image m_Background;
+    [SerializeField] private Image m_Forground;
+    private int m_BGIndex;
     private void RandomBackground()
     {
-        int random = Random.Range(0, m_GameplayBGs.Length);
-        m_Background.sprite = m_GameplayBGs[random];
+        int random = UnityEngine.Random.Range(0, m_GameplayBGs.Length);
+        m_Background.sprite = m_GameplayBGs[random].m_BackgroundImage;
+        m_Forground.sprite = m_GameplayBGs[random].m_ForgroundImage;
+        m_BGIndex = random;
 
+    }
+    
+
+    
+    private void GetSpriteSize()
+    {
+        SpriteRenderer redSprite = centerPointPrefab.GetComponent<SpriteRenderer>();
+        Vector2 spriteSize = redSprite.bounds.size;
+    }
+    private void OnDrawGizmos()
+    {
+        SpriteRenderer redSprite = centerPointPrefab.GetComponent<SpriteRenderer>();
+        Vector2 spriteSize = redSprite.bounds.size;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawCube(centerPointPrefab.transform.position, new Vector3(spriteSize.x,spriteSize.y,1));
     }
     #endregion
     #endregion
+}
+[Serializable]
+public struct Background
+{
+    public Sprite m_BackgroundImage;
+    public Sprite m_ForgroundImage;
 }
