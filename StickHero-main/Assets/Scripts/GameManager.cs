@@ -379,6 +379,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Background[] m_GameplayBGs;
     [SerializeField] private Image m_Background;
     [SerializeField] private Image m_Forground;
+    [SerializeField] private ParallaxEffect m_Canvas;
     private int m_BGIndex;
     private void RandomBackground()
     {

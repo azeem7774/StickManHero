@@ -21,12 +21,15 @@ public class ParallaxEffect : MonoBehaviour
         }
 
         // Start the coroutine
-        StartCoroutine(ParallaxCoroutine());
+        
     }
 
     private IEnumerator ParallaxCoroutine()
     {
-        while (true)
+        float elapsedTime =0;
+        float duration = 0.5f;
+
+        while (elapsedTime < duration)
         {
             for (int i = 0; i < parallaxLayers.Length; i++)
             {
@@ -34,10 +37,15 @@ public class ParallaxEffect : MonoBehaviour
                 Vector3 targetPosition = initialPositions[i] + (followTransform.position - initialPositions[i]) * parallaxFactors[i];
 
                 // Move the layer towards the target position smoothly using Lerp
-                parallaxLayers[i].position = Vector3.Lerp(parallaxLayers[i].position, targetPosition, smoothing * Time.deltaTime);
+                parallaxLayers[i].position = Vector3.Lerp(parallaxLayers[i].position, targetPosition, elapsedTime/duration);
             }
 
             yield return null;
         }
+    }
+
+    public void MoveBackground()
+    {
+        StartCoroutine(ParallaxCoroutine());
     }
 }
