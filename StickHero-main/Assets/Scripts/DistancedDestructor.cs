@@ -6,6 +6,7 @@ public class DistancedDestructor : MonoBehaviour
 {
 
     private GameObject player;
+    public Transform ObjectPoint;
 
     // Start is called before the first frame update
     void Start()
@@ -26,4 +27,11 @@ public class DistancedDestructor : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    private void OnEnable()
+    {
+        
+    }
+
+
 }

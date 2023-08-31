@@ -99,7 +99,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83fafe68768eaa24aa095dc4d4205b38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ObjectPoint: {fileID: 2537552250415584348}
 --- !u!1 &5995727753059999701
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,12 +312,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2279313554085708431, guid: 93bd185666cc340e0a5bfce7cc8d3458, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.33252448
+      objectReference: {fileID: 0}
+    - target: {fileID: 2279313554085708431, guid: 93bd185666cc340e0a5bfce7cc8d3458, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.74019
+      objectReference: {fileID: 0}
+    - target: {fileID: 2279313554085708431, guid: 93bd185666cc340e0a5bfce7cc8d3458, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.0003
       objectReference: {fileID: 0}
     - target: {fileID: 2279313554085708431, guid: 93bd185666cc340e0a5bfce7cc8d3458, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.9
+      value: 0.92598
       objectReference: {fileID: 0}
     - target: {fileID: 2279313554085708431, guid: 93bd185666cc340e0a5bfce7cc8d3458, type: 3}
       propertyPath: m_LocalPosition.z

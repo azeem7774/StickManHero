@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     private Vector2 minMaxRange, spawnRange;
 
     [SerializeField]
-    private GameObject pillarPrefab, centerPointPrefab, stickPrefab, orangePrefab, applePrefab , currentCamera;
+    private GameObject pillarPrefab, centerPointPrefab, stickPrefab, orangePrefab, applePrefab, currentCamera, ColliderObject;
     [SerializeField] private GameObject[] playerPrefab;
 
     [SerializeField]
@@ -53,6 +53,26 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Canvas m_GameplayCanvas;
     private Rigidbody2D m_PlayerRb;
 
+
+    //for Jump
+    public bool isMoving = false;
+
+
+
+    //for inverted player
+    private bool tapStarted = false; // Flag to track if a tap has started
+    private float tapStartTime = 0f; // Time when the tap started
+    private float tapThreshold = 0.2f; // Maximum time allowed for a single tap in seconds
+
+
+
+
+    //for perfect stick
+    public float StickLenght;
+    public Vector2 StartPoint;
+    public Vector2 EndPoint;
+    public GameObject tmpObjP;
+    public GameObject PerfectlineObj;
     private void Awake()
     {
         if(instance == null)
@@ -93,30 +113,70 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         //if (!IsTouchOnUI())
+        if (UIManager._instance.isGamestarted)
         {
-            if (currentState == GameState.INPUT)
-            {
-                if (Input.GetMouseButton(0))
-                {
-                    currentState = GameState.GROWING;
-                    ScaleStick();
-                }
-            }
+            CheckTap();
 
-            if (currentState == GameState.GROWING)
             {
-                if (Input.GetMouseButton(0))
+                if (currentState == GameState.INPUT)
                 {
-                    ScaleStick();
+                    if (Input.GetMouseButton(0))
+                    {
+                        currentState = GameState.GROWING;
+                        ScaleStick();
+                    }
                 }
-                else
+
+                if (currentState == GameState.GROWING)
                 {
-                    StartCoroutine(FallStick());
+                    if (Input.GetMouseButton(0))
+                    {
+                        ScaleStick();
+                    }
+                    else
+                    {
+                        StartCoroutine(FallStick());
+                    }
                 }
             }
         }
 
     }
+
+
+
+    #region Player invert Region
+    public void CheckTap()
+    {
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0); // Get the first touch (assuming only one finger tap)
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                // The finger touched the screen, mark the start time
+                tapStarted = true;
+                tapStartTime = Time.time;
+            }
+            else if (touch.phase == TouchPhase.Ended && tapStarted)
+            {
+                // The finger was lifted, check if it's a single tap
+                if (Time.time - tapStartTime <= tapThreshold)
+                {
+                    // Handle the single tap
+                    Debug.Log("Tapped"+touch.position);
+                }
+
+                // Reset tap flag
+                tapStarted = false;
+            }
+        }
+    }
+
+
+    #endregion
+
+
 
     void ScaleStick()
     {
@@ -125,10 +185,25 @@ public class GameManager : MonoBehaviour
         if (tempScale.y > maxStickSize)
             tempScale.y = maxStickSize;
         currentStick.transform.localScale = tempScale;
+
+        StickLenght = tempScale.y;
+        StartPoint = currentStick.transform.position;
+
+
+
+        //Temp Code
+        //Vector3 tempScale = currentStick.GetComponent<DistancedDestructor>().ObjectPoint.localScale;
+        //tempScale.y += Time.deltaTime * stickIncreaseSpeed;
+        //if (tempScale.y > maxStickSize)
+        //    tempScale.y = maxStickSize;
+        //currentStick.transform.localScale = tempScale;
+
+
     }
 
     IEnumerator FallStick()
     {
+
         currentState = GameState.NONE;
         var x = Rotate(currentStick.transform, rotateTransform, 0.4f); 
         yield return x;
@@ -153,11 +228,29 @@ public class GameManager : MonoBehaviour
         {
             if(temp.collider.CompareTag("Platform"))
             {
+                EndPoint = temp.collider.gameObject.GetComponent<DistancedDestructor>().ObjectPoint.position;
+                tmpObjP = temp.collider.gameObject.GetComponent<DistancedDestructor>().ObjectPoint.gameObject;
+                float perfectDistannce= Vector2.Distance(StartPoint, EndPoint);
+                Debug.Log("Distance" + perfectDistannce);
+                float maxPerfect = perfectDistannce + 0.25f;
+                float minPerfect = perfectDistannce - 0.25f;
+
+                if(StickLenght==perfectDistannce || StickLenght==maxPerfect || StickLenght==minPerfect)
+                {
+                    PerfectlineObj.SetActive(true);
+                    Debug.Log("perfect Line");
+                }
+
+
                 result = temp;
             }
         }
 
-        if(!result || !result.collider.CompareTag("Platform"))
+
+
+
+
+        if (!result || !result.collider.CompareTag("Platform"))
         {
             player.GetComponent<Rigidbody2D>().gravityScale = 1f;
             x = Rotate(currentStick.transform, endRotateTransform, 0.5f);
@@ -186,7 +279,8 @@ public class GameManager : MonoBehaviour
             {
                 GameOver();
             }
-            
+
+
         }
         else
         {
@@ -212,6 +306,10 @@ public class GameManager : MonoBehaviour
             stickPosition.y = currentStick.transform.position.y;
             stickPosition.z = currentStick.transform.position.z;
             currentStick = Instantiate(stickPrefab, stickPosition, Quaternion.identity);
+
+
+            
+
         }
     }
 
@@ -229,6 +327,7 @@ public class GameManager : MonoBehaviour
         Vector3 stickPos = stickPrefab.transform.position;
         stickPos.x += (currentPillar.transform.localScale.x*0.5f - 0.05f);
         currentStick = Instantiate(stickPrefab, stickPos, Quaternion.identity);
+
     }
 
     void CreatePlatform()
@@ -245,11 +344,16 @@ public class GameManager : MonoBehaviour
         {
             int randomPrefabe = UnityEngine.Random.Range(0, 2);
             GameObject pickable;
-            if (randomPrefabe == 0)
-                pickable = Instantiate(applePrefab);
-            
-            else
-                pickable = Instantiate(orangePrefab);
+            //if (randomPrefabe == 0)
+            //{
+            //    pickable = Instantiate(applePrefab);
+            //}
+            //else
+            //{
+            //    pickable = Instantiate(orangePrefab);
+            //}
+            pickable = Instantiate(orangePrefab);
+
             Vector3 tempPos = currentPlatform.transform.position;
             tempPos.y = orangePrefab.transform.position.y;
             pickable.transform.position = tempPos;
@@ -292,6 +396,15 @@ public class GameManager : MonoBehaviour
         scoreEndText.text = score.ToString();
         highScoreText.text = highScore.ToString();
     }
+
+    //own Custom functions
+     void instantiateObject()
+     {
+        Transform pos =stickPrefab.GetComponent<DistancedDestructor>().ObjectPoint;
+        Instantiate(ColliderObject,pos.position,Quaternion.identity);
+     }
+
+
 
     public void UpdateOranges()
     {
@@ -339,6 +452,7 @@ public class GameManager : MonoBehaviour
             var normalized = passed / time;
             var current = Vector3.Lerp(init, target, normalized);
             currentTransform.position = current;
+            isMoving = true;
             yield return null;
         }
     }
