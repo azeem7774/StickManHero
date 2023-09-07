@@ -20,36 +20,25 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.touchCount > 0)
+        if(Input.GetKeyDown(KeyCode.H))
         {
-            // Loop through all active touches
-            for (int i = 0; i < Input.touchCount; i++)
-            {
-                // Check if this touch is a tap (e.g., finger released)
-                if (Input.GetTouch(i).phase == TouchPhase.Ended)
-                {
-                    // Handle the tap here
-                    Debug.Log("Tapped on screen");
-                }
-            }
+            ChangeDirection();
         }
     }
-    private void OnMouseDown()
+
+
+    #region My Custom Functions
+    public void ChangeDirection()
     {
-        Debug.Log("Tap On Player");
-
-
-        //if(GameManager.instance.isMoving)
-        //{
-        //    rb.velocity = new Vector2(rb.velocity.x, jumpPower);
-        //    Invoke("disableJump", 0.5f);
-        //}
+        this.transform.Rotate(new Vector3(180f, 0f, 0f));
     }
 
-    void disableJump()
-    {
-        GameManager.instance.isMoving = false;
-    }
+
+
+    #endregion
+
+
+
 
 
 }

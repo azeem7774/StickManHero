@@ -13,7 +13,7 @@ public class Oranges : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             GameManager.instance.UpdateOranges();
-            SoundManager.Instance.PlayPickupSound();
+            //SoundManager.Instance.PlayPickupSound();
             temp = Instantiate(m_Partcle, transform.position, Quaternion.identity);
             StartCoroutine(Destroy());
             gameObject.SetActive(false);
