@@ -8,8 +8,7 @@ public class Oranges : MonoBehaviour
     private GameObject temp;
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Collided with" + collision.gameObject.name);
-
+       
         if (collision.CompareTag("Player"))
         {
             GameManager.instance.UpdateOranges();

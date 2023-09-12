@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class UIManager : MonoBehaviour
     // 0 - MainMenuPanel
     // 1 - gameplay Panel
     // 2 - shop panel
+    // 3 - pause panel
 
     [Header("Audio Data")]
     public Button soundbtn;
@@ -32,7 +34,11 @@ public class UIManager : MonoBehaviour
 
 
     public PlayerController currentPlayer;
-    
+
+    [Space]
+    [Header("Details for invert player")]
+    public GameObject invertbtn;
+
 
 
 
@@ -100,6 +106,28 @@ public class UIManager : MonoBehaviour
         gamePanels[0].SetActive(true);
     }
 
+
+    public void pauseGame()
+    {
+        Time.timeScale = 0;
+        clearAllPanels();
+        gamePanels[3].SetActive(true);
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1;
+        clearAllPanels();
+        gamePanels[1].SetActive(true);
+    }
+
+    public void HomeScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+
+
    public void enableDisableMusic()
    {
 
@@ -137,6 +165,15 @@ public class UIManager : MonoBehaviour
         }
         AudioManager.instance.turnSoundOn(isSoundEnable);
 
+    }
+
+    public void selectPlayer(int index)
+    {
+        PrefManager.PlayerIndex = index;
+        clearAllPanels();
+
+        //add some fade
+        HomeScene();
     }
 
 

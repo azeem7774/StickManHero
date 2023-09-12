@@ -5,6 +5,8 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
+using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 public enum GameState
 {
@@ -74,6 +76,20 @@ public class GameManager : MonoBehaviour
     public Vector2 EndPoint;
     public GameObject tmpObjP;
     public GameObject PerfectlineObj;
+
+
+    //for hiding Stick
+    public GameObject cStick;
+    public bool isPerfecScore = false;
+
+
+    //for odd number of platforms
+    public int NumberofPlatforms = 0;
+    public GameObject RedPointer;
+    GameObject redDot = null;
+    public List<GameObject> sticks;
+
+
     private void Awake()
     {
         if(instance == null)
@@ -116,7 +132,7 @@ public class GameManager : MonoBehaviour
         //if (!IsTouchOnUI())
         if (UIManager._instance.isGamestarted)
         {
-
+            cStick = currentStick;
             {
                 if (currentState == GameState.INPUT)
                 {
@@ -146,32 +162,35 @@ public class GameManager : MonoBehaviour
 
 
     #region Player invert Region
-    public void CheckTap()
-    {
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0); // Get the first touch (assuming only one finger tap)
+    public bool canTap = false;
+    ////IEnumerator CheckTap()
+    //{
+    //    //if (Input.touchCount > 0 && canTap == true)
+    //    //{
+    //    //    Touch touch = Input.GetTouch(0); // Get the first touch (assuming only one finger tap)
 
-            if (touch.phase == TouchPhase.Began)
-            {
-                // The finger touched the screen, mark the start time
-                tapStarted = true;
-                tapStartTime = Time.time;
-            }
-            else if (touch.phase == TouchPhase.Ended && tapStarted)
-            {
-                // The finger was lifted, check if it's a single tap
-                if (Time.time - tapStartTime <= tapThreshold)
-                {
-                    // Handle the single tap
-                    Debug.Log("Tapped"+touch.position);
-                }
+    //    //    if (touch.phase == TouchPhase.Began)
+    //    //    {
+    //    //        // The finger touched the screen, mark the start time
+    //    //        tapStarted = true;
+    //    //        tapStartTime = Time.time;
+    //    //    }
+    //    //    else if (touch.phase == TouchPhase.Ended && tapStarted)
+    //    //    {
+    //    //        // The finger was lifted, check if it's a single tap
+    //    //        if (Time.time - tapStartTime <= tapThreshold)
+    //    //        {
+    //    //            // Handle the single tap
+    //    //            Debug.Log("Tapped"+touch.position);
+    //    //        }
 
-                // Reset tap flag
-                tapStarted = false;
-            }
-        }
-    }
+    //    //        // Reset tap flag
+    //    //        tapStarted = false;
+    //    //    }
+    //    //}
+
+   
+    //}
 
 
     #endregion
@@ -180,6 +199,10 @@ public class GameManager : MonoBehaviour
 
     void ScaleStick()
     {
+
+        //enabling the stick
+        cStick.SetActive(true);
+
         Vector3 tempScale = currentStick.transform.localScale;
         tempScale.y += Time.deltaTime * stickIncreaseSpeed;
         if (tempScale.y > maxStickSize)
@@ -214,7 +237,7 @@ public class GameManager : MonoBehaviour
         {
             if (true)
             {
-                print("Perfect");
+                //print("Perfect");
             }
         }
         Vector3 movePosition = currentStick.transform.position + new Vector3(currentStick.transform.localScale.y,0,0);
@@ -231,13 +254,14 @@ public class GameManager : MonoBehaviour
                 EndPoint = temp.collider.gameObject.GetComponent<DistancedDestructor>().ObjectPoint.position;
                 tmpObjP = temp.collider.gameObject.GetComponent<DistancedDestructor>().ObjectPoint.gameObject;
                 float perfectDistannce= Vector2.Distance(StartPoint, EndPoint);
-                Debug.Log("Distance" + perfectDistannce);
+                //Debug.Log("Distance" + perfectDistannce);
                 float maxPerfect = perfectDistannce + 0.25f;
                 float minPerfect = perfectDistannce - 0.25f;
 
                 if(StickLenght==perfectDistannce || StickLenght==maxPerfect || StickLenght==minPerfect)
                 {
                     PerfectlineObj.SetActive(true);
+                    UpdateScore();
                     Debug.Log("perfect Line");
                 }
 
@@ -274,6 +298,8 @@ public class GameManager : MonoBehaviour
                 stickPosition.y = currentStick.transform.position.y;
                 stickPosition.z = currentStick.transform.position.z;
                 currentStick = Instantiate(stickPrefab, stickPosition, Quaternion.identity);
+                sticks.Add(currentStick);
+                cStick = currentStick;
             }
             else
             {
@@ -306,9 +332,10 @@ public class GameManager : MonoBehaviour
             stickPosition.y = currentStick.transform.position.y;
             stickPosition.z = currentStick.transform.position.z;
             currentStick = Instantiate(stickPrefab, stickPosition, Quaternion.identity);
+            sticks.Add(currentStick);
 
 
-            
+
 
         }
     }
@@ -327,6 +354,8 @@ public class GameManager : MonoBehaviour
         Vector3 stickPos = stickPrefab.transform.position;
         stickPos.x += (currentPillar.transform.localScale.x*0.5f - 0.05f);
         currentStick = Instantiate(stickPrefab, stickPos, Quaternion.identity);
+        sticks.Add(currentStick);
+        cStick = currentStick;
 
     }
 
@@ -335,8 +364,8 @@ public class GameManager : MonoBehaviour
         GameObject currentPlatform = Instantiate(pillarPrefab);
         centerPointPrefab = currentPlatform.transform.GetChild(0).gameObject;// get red sprite as a perfect point
         currentPillar = nextPillar == null ? currentPlatform : nextPillar;
-        cPillar = currentPlatform;
-        nPillar = nextPillar;
+        //cPillar = currentPlatform;
+        //nPillar = nextPillar;
 
 
 
@@ -345,10 +374,12 @@ public class GameManager : MonoBehaviour
         Vector3 tempDistance = new Vector3(UnityEngine.Random.Range(spawnRange.x,spawnRange.y) + currentPillar.transform.localScale.x*0.5f,0,0);
         startPos += tempDistance;
         m_CurrentPlatform = currentPlatform.transform.position+ new Vector3(transform.position.x, transform.position.y+ yOffset, 0);
-        if(UnityEngine.Random.Range(0,1) == 0)
+       
+ 
+
+        if (UnityEngine.Random.Range(0,1) == 0)
         {
             int randomPrefabe = UnityEngine.Random.Range(0, 2);
-            GameObject pickable;
             //if (randomPrefabe == 0)
             //{
             //    pickable = Instantiate(applePrefab);
@@ -358,26 +389,95 @@ public class GameManager : MonoBehaviour
             //    pickable = Instantiate(orangePrefab);
             //}
             //find the distance between pillars
-            float distanceBetween;
-            if (cPillar != null && nPillar != null)
-            {
-                distanceBetween = Vector2.Distance(cPillar.transform.position, nPillar.transform.position);
-                Debug.Log("Distance between is " + distanceBetween);
-
-
-                if (distanceBetween >= 2.2f)
-                {
-                    pickable = Instantiate(orangePrefab);
-                    Vector3 tempPos = currentPlatform.transform.position;
-                    tempPos.y = orangePrefab.transform.position.y - 1f;
-                    pickable.transform.position = tempPos;
-                    pickable.transform.position = new Vector3(tempPos.x - 1.5f, tempPos.y, tempPos.z);
-                }
-            }
+           
             
         }
         m_Platforms.Add(currentPlatform);
+
+
+        //for pickables
+        if (cPillar != null && nPillar != null)
+        {
+            float distanceBetween;
+            distanceBetween = Vector3.Distance(cPillar.transform.position, nPillar.transform.position);
+
+            Debug.Log("Distance between is " + Mathf.Round(distanceBetween * Mathf.Pow(10, 2)) / Mathf.Pow(10, 2));
+            Debug.Log("Distance between is without " + distanceBetween);
+            //Debug.Log("Distance stick " + CurrenStick.transform.localScale.y);
+
+            GameObject pickable;
+
+            if (distanceBetween >= 2.2f)
+            {
+                pickable = Instantiate(orangePrefab);
+                Vector3 tempPos = m_CurrentPlatform;
+                tempPos.y = orangePrefab.transform.position.y - 1f;
+                pickable.transform.position = tempPos;
+                pickable.transform.position = new Vector3(tempPos.x - 1.5f, tempPos.y, tempPos.z);
+            }
+
+
+        }
+
+        // adding the number of platforms 
+        NumberofPlatforms++;
+        GameObject CurrenStick = currentStick;
+        if (NumberofPlatforms != 0 && NumberofPlatforms % 2 != 0 && NumberofPlatforms != 1)
+        {
+            //spawn red dot
+            redDot = Instantiate(RedPointer);
+            redDot.transform.position = new Vector3(currentPlatform.transform.position.x, -3.1f, 0f);
+
+            Debug.Log("Spawn Red Prefab");
+
+        }
+
+      
+
+
     }
+
+
+    int indexNum = 0;
+
+    void findingDistance()
+    {
+        Debug.Log("Distance work");
+
+        cPillar = m_Platforms[indexNum];
+        nPillar = m_Platforms[indexNum+1];
+
+
+        float distanceBetween;
+        if (cPillar != null && nPillar != null && redDot!=null)
+        {
+            // distanceBetween = Vector3.Distance(CurrenStick.transform.position, redDot.transform.position);
+            // float Vel = distanceBetween / cStick.transform.localScale.y;
+
+             distanceBetween = Vector3.Distance(sticks[indexNum].transform.position, redDot.transform.position);
+
+            Debug.Log("Distance between is " + Mathf.Round(distanceBetween * Mathf.Pow(10, 2)) / Mathf.Pow(10, 2));
+            Debug.Log("Distance between is without " + distanceBetween);
+            //Debug.Log("Distance stick " + CurrenStick.transform.localScale.y);
+
+            //GameObject pickable;
+
+            //if (distanceBetween >= 2.2f)
+            //{
+            //    pickable = Instantiate(orangePrefab);
+            //    Vector3 tempPos = m_CurrentPlatform;
+            //    tempPos.y = orangePrefab.transform.position.y - 1f;
+            //    pickable.transform.position = tempPos;
+            //    pickable.transform.position = new Vector3(tempPos.x - 1.5f, tempPos.y, tempPos.z);
+            //}
+        }
+
+
+        indexNum++;
+
+
+    }
+
 
     void SetRandomSize(GameObject pillar)
     {
@@ -392,6 +492,7 @@ public class GameManager : MonoBehaviour
     {
         score++;
         scoreText.text = score.ToString();
+        findingDistance();
     }
 
     void GameOver()
@@ -471,14 +572,15 @@ public class GameManager : MonoBehaviour
             var current = Vector3.Lerp(init, target,normalized);
             currentTransform.position = current;
             isMoving = true;
-            Invoke("waitForMoving",1f);
+            UIManager._instance.invertbtn.SetActive(true);
+            Invoke("waitForMoving",1.5f);
             yield return null;
         }
     }
 
     void waitForMoving()
     {
-        isMoving = false;
+        UIManager._instance.invertbtn.SetActive(false);
     }
 
 

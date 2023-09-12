@@ -26,6 +26,12 @@ public class DistancedDestructor : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        if(UIManager._instance.isGamestarted)
+        {
+            this.gameObject.SetActive(true);
+        }
+
     }
 
     private void OnEnable()
