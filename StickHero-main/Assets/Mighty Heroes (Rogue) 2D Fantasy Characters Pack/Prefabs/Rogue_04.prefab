@@ -1115,6 +1115,7 @@ GameObject:
   - component: {fileID: 95000010123886660}
   - component: {fileID: -8478119262019193881}
   - component: {fileID: 7010354104628227923}
+  - component: {fileID: 7210156521477861220}
   m_Layer: 0
   m_Name: Rogue_04
   m_TagString: Player
@@ -1205,6 +1206,21 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &7210156521477861220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000011922212602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1401deb5bf6bfd04ca73ba683d890cf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpCounter: 1
+  jumpPower: 0
+  _anim: {fileID: 0}
 --- !u!1 &1000012139601564
 GameObject:
   m_ObjectHideFlags: 0

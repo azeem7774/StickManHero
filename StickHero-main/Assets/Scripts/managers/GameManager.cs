@@ -351,6 +351,7 @@ public class GameManager : MonoBehaviour
         player = Instantiate(playerPrefab[m_PlayerIndex],playerPos,Quaternion.identity);
         player.name = "Player";
         m_PlayerRb = player.GetComponent<Rigidbody2D>();
+        UIManager._instance.currentPlayer = player;
 
         Vector3 stickPos = stickPrefab.transform.position;
         stickPos.x += (currentPillar.transform.localScale.x*0.5f - 0.05f);
@@ -606,7 +607,10 @@ public class GameManager : MonoBehaviour
         {
             passed +=  Time.deltaTime;
             var normalized = passed / time;
+            Debug.Log("Normal Value" + normalized);
             var current = Vector3.Lerp(init, target,normalized);
+            //var current = Vector3.Lerp(init, target, 0.2f);
+
             currentTransform.position = current;
             isMoving = true;
             UIManager._instance.invertbtn.SetActive(true);

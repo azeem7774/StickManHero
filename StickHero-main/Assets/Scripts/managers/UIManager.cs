@@ -33,7 +33,7 @@ public class UIManager : MonoBehaviour
     public GameObject ShopTitle;
 
 
-    public PlayerController currentPlayer;
+    public GameObject currentPlayer;
 
     [Space]
     [Header("Details for invert player")]
@@ -58,14 +58,13 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         //Assigning data
-        currentPlayer = GameManager.instance.Player.GetComponent<PlayerController>();
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+       
     }
 
 
@@ -86,7 +85,7 @@ public class UIManager : MonoBehaviour
         if (isGamestarted && GameManager.instance.isMoving)
         {
             Debug.Log("Taped");
-            currentPlayer.ChangeDirection();
+            currentPlayer.GetComponent<PlayerController>().ChangeDirection();
            
         }
     }
