@@ -88,6 +88,7 @@ public class GameManager : MonoBehaviour
     public GameObject RedPointer;
     GameObject redDot = null;
     public List<GameObject> sticks;
+    public List<GameObject> redDots;
 
 
     private void Awake()
@@ -401,8 +402,8 @@ public class GameManager : MonoBehaviour
             float distanceBetween;
             distanceBetween = Vector3.Distance(cPillar.transform.position, nPillar.transform.position);
 
-            Debug.Log("Distance between is " + Mathf.Round(distanceBetween * Mathf.Pow(10, 2)) / Mathf.Pow(10, 2));
-            Debug.Log("Distance between is without " + distanceBetween);
+           // Debug.Log("Distance between is " + Mathf.Round(distanceBetween * Mathf.Pow(10, 2)) / Mathf.Pow(10, 2));
+            //Debug.Log("Distance between is without " + distanceBetween);
             //Debug.Log("Distance stick " + CurrenStick.transform.localScale.y);
 
             GameObject pickable;
@@ -427,6 +428,7 @@ public class GameManager : MonoBehaviour
             //spawn red dot
             redDot = Instantiate(RedPointer);
             redDot.transform.position = new Vector3(currentPlatform.transform.position.x, -3.1f, 0f);
+            redDots.Add(redDot);
 
             Debug.Log("Spawn Red Prefab");
 
@@ -435,6 +437,15 @@ public class GameManager : MonoBehaviour
       
 
 
+    }
+
+
+    public void destroyRedDots()
+    {
+        for(int i=0;i<redDots.Count;i++)
+        {
+            redDots[i].SetActive(false);
+        }
     }
 
 
@@ -455,10 +466,35 @@ public class GameManager : MonoBehaviour
             // float Vel = distanceBetween / cStick.transform.localScale.y;
 
              distanceBetween = Vector3.Distance(sticks[indexNum].transform.position, redDot.transform.position);
+            float roundDistance = Mathf.Round(distanceBetween * Mathf.Pow(10, 1)) / Mathf.Pow(10, 1);
+            float roundStickDistance = Mathf.Round(sticks[indexNum].transform.localScale.y * Mathf.Pow(10, 1)) / Mathf.Pow(10, 1);
 
-            Debug.Log("Distance between is " + Mathf.Round(distanceBetween * Mathf.Pow(10, 2)) / Mathf.Pow(10, 2));
-            Debug.Log("Distance between is without " + distanceBetween);
-            //Debug.Log("Distance stick " + CurrenStick.transform.localScale.y);
+            Debug.Log("Distance between is " + roundDistance);
+            //Debug.Log("Distance between is without " + distanceBetween);
+            Debug.Log("Distance stick " + sticks[indexNum].transform.localScale.y);
+            Debug.Log("Distance between stick with round " + roundStickDistance);
+
+
+
+            float tmpMax = roundDistance + 0.1f;
+            float tmpMin = roundDistance - 0.1f;
+
+            if(roundStickDistance>=tmpMin && roundStickDistance<=tmpMax)
+            {
+                Debug.LogError("Perfect stick");
+                PerfectlineObj.SetActive(true);
+                score++;
+                scoreText.text = score.ToString();
+
+            }
+
+
+
+            //if (roundStickDistance==roundDistance)
+            //{
+            //    Debug.LogError("Perfect stick");
+            //}
+
 
             //GameObject pickable;
 
@@ -505,6 +541,7 @@ public class GameManager : MonoBehaviour
         endPanel.SetActive(true);
         m_GamePlayScreen.SetActive(false);
         scorePanel.SetActive(false);
+        destroyRedDots();
 
         if(score > highScore)
         {

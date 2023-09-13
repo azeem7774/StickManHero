@@ -718,6 +718,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &98924502
 GameObject:
   m_ObjectHideFlags: 0
@@ -3792,6 +3793,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &478145757
 GameObject:
   m_ObjectHideFlags: 0
@@ -5576,8 +5578,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 859445685}
-  m_Horizontal: 1
-  m_Vertical: 1
+  m_Horizontal: 0
+  m_Vertical: 0
   m_MovementType: 1
   m_Elasticity: 0.1
   m_Inertia: 1
@@ -8467,6 +8469,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1074562324
 GameObject:
   m_ObjectHideFlags: 0
@@ -14137,6 +14140,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1815567149
 GameObject:
   m_ObjectHideFlags: 0
@@ -15431,6 +15435,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1964694903
 GameObject:
   m_ObjectHideFlags: 0
@@ -15792,6 +15797,7 @@ MonoBehaviour:
   isPerfecScore: 0
   NumberofPlatforms: 0
   RedPointer: {fileID: 2279313554085708430, guid: 93bd185666cc340e0a5bfce7cc8d3458, type: 3}
+  sticks: []
   canTap: 0
   m_GameplayBGs:
   - m_BackgroundImage: {fileID: 21300000, guid: 52c1f75db1885439c9b4c3dbc5d477f7, type: 3}
@@ -17560,6 +17566,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!212 &171969160587992222
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -18593,6 +18600,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1282460996338359291
 GameObject:
   m_ObjectHideFlags: 0
@@ -19797,6 +19805,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!212 &8260459887688927659
 SpriteRenderer:
   m_ObjectHideFlags: 0
