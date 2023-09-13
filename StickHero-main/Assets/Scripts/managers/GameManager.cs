@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
 
     private int score, oranges, apples, highScore;
 
-    private float cameraOffsetX;
+    public float cameraOffsetX;
 
     private GameState currentState;
 
@@ -91,6 +91,10 @@ public class GameManager : MonoBehaviour
     public List<GameObject> redDots;
 
 
+    //for camera setup
+    public float CamVal;
+
+
     private void Awake()
     {
         if(instance == null)
@@ -120,7 +124,10 @@ public class GameManager : MonoBehaviour
         highScoreText.text = highScore.ToString();
 
         CreateStartObjects();
-        cameraOffsetX = currentCamera.transform.position.x - player.transform.position.x;
+
+        //setting camera offset
+        //commented for testing
+        //cameraOffsetX = currentCamera.transform.position.x - player.transform.position.x;
 
         GameStart();
         if(StateManager.instance.hasSceneStarted)

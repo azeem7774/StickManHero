@@ -59,7 +59,10 @@ public class UIManager : MonoBehaviour
     {
         //Assigning data
         currentPlayer = GameManager.instance.Player.GetComponent<PlayerController>();
-        
+
+        //setting timescale to 1
+        Time.timeScale = 1;
+
     }
 
     // Update is called once per frame
