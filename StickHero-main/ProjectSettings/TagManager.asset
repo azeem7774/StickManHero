@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Diamond
   - Platform
+  - TowerBody
   layers:
   - Default
   - TransparentFX
