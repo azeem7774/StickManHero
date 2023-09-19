@@ -1920,7 +1920,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 5aa26e8921eb81f4db4934974a5dae6f, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 5db23f051dd43e6429af574cf8d79452, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1
@@ -3006,6 +3006,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1274451051
 GameObject:
   m_ObjectHideFlags: 0

@@ -405,28 +405,34 @@ public class GameManager : MonoBehaviour
 
 
         //for pickables
-        if (cPillar != null && nPillar != null)
+        if(m_Platforms.Count>2)
         {
-            float distanceBetween;
-            distanceBetween = Vector3.Distance(cPillar.transform.position, nPillar.transform.position);
-
-           // Debug.Log("Distance between is " + Mathf.Round(distanceBetween * Mathf.Pow(10, 2)) / Mathf.Pow(10, 2));
-            //Debug.Log("Distance between is without " + distanceBetween);
-            //Debug.Log("Distance stick " + CurrenStick.transform.localScale.y);
-
-            GameObject pickable;
-
-            if (distanceBetween >= 2.2f)
+            if (m_Platforms[m_Platforms.Count - 1] != null && m_Platforms[m_Platforms.Count-2] != null)
             {
-                pickable = Instantiate(orangePrefab);
-                Vector3 tempPos = m_CurrentPlatform;
-                tempPos.y = orangePrefab.transform.position.y - 1f;
-                pickable.transform.position = tempPos;
-                pickable.transform.position = new Vector3(tempPos.x - 1.5f, tempPos.y, tempPos.z);
+                float distanceBetween;
+                distanceBetween = Vector3.Distance(m_Platforms[m_Platforms.Count - 2].transform.position, m_Platforms[m_Platforms.Count-1].transform.position);
+
+                // Debug.Log("Distance between is " + Mathf.Round(distanceBetween * Mathf.Pow(10, 2)) / Mathf.Pow(10, 2));
+                //Debug.Log("Distance between is without " + distanceBetween);
+                //Debug.Log("Distance stick " + CurrenStick.transform.localScale.y);
+
+                GameObject pickable;
+
+                if (distanceBetween >= 4f)
+                {
+                    pickable = Instantiate(orangePrefab);
+                    Vector3 tempPos = m_CurrentPlatform;
+                    tempPos.y = orangePrefab.transform.position.y - 1f;
+                    pickable.transform.position = tempPos;
+                    pickable.transform.position = new Vector3(player.transform.position.x + 1.5f, tempPos.y, tempPos.z);
+                }
+
+
             }
-
-
         }
+
+
+
 
         // adding the number of platforms 
         NumberofPlatforms++;
@@ -539,10 +545,10 @@ public class GameManager : MonoBehaviour
         findingDistance();
     }
 
-    void GameOver()
+    public void GameOver()
     {
-        foreach (var item in m_Platforms)
-            item.SetActive(false);
+       // foreach (var item in m_Platforms)
+            //item.SetActive(false);
 
         
         m_GameplayCanvas.sortingOrder = 10;
@@ -559,6 +565,7 @@ public class GameManager : MonoBehaviour
 
         scoreEndText.text = score.ToString();
         highScoreText.text = highScore.ToString();
+        
     }
 
     //own Custom functions
@@ -663,6 +670,7 @@ public class GameManager : MonoBehaviour
         return false;
     }
     #region MyCodeSupprt
+    [SerializeField]
     private List<GameObject> m_Platforms = new List<GameObject>(); 
     #region Visuals
     [SerializeField] private Background[] m_GameplayBGs;
